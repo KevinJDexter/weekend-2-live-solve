@@ -1,6 +1,15 @@
 console.log('js');
 
 let currentType = '';
+let currentX = '';
+let currentY = '';
+
+let updateTextOut = () => {
+  let el = $( '#textOut' );
+  el.empty();
+  el.val(`${currentX} ${currentType} ${currentY}`);
+}
+
 let historyNow = () => {
   console.log('in historyNow');
 
@@ -28,22 +37,22 @@ let answerMeThis = () => {
   })
     .then(function (response) {
       console.log('back from server with', response);
-      el = $('#answerOut');
-      el.empty();
-      el.append('Answer: ' + response.answer);
-
       historyNow();
+      let el = $( '#textOut' );
+      el.empty();
+      el.val( response.answer );
+
     })
 }
 
 let doMathNow = () => {
-  if ($( '#xIn' ).val() == '' || $( '#yIn' ).val() == '' || currentType == '') {
-    alert('no empties yo!');
+  if (currentX == '' || currentY == '' || currentType == '') {
+    alert('I don\'t understand!');
   } else {
     console.log('in doMathNow');
     let objectToSend = {
-      x: $('#xIn').val(),
-      y: $('#yIn').val(),
+      x: currentX,
+      y: currentY,
       type: currentType
     }
     console.log('sending to server:', objectToSend);
@@ -55,6 +64,7 @@ let doMathNow = () => {
     })
       .then(function (response) {
         console.log('back from server with:', response);
+        clearAll();
         answerMeThis();
       })
   }
@@ -63,13 +73,25 @@ let doMathNow = () => {
 
 let clearAll = () => {
   console.log('in clearAll');
-  $('#xIn').val('');
-  $('#yIn').val('');
+  currentX = '';
+  currentY = '';
+  currentType = '';
+  updateTextOut()
+}
+
+function setNumber() {
+  if ( currentType == '') {
+    currentX += $( this ).text();
+  } else {
+    currentY += $( this ).text();
+  }
+  updateTextOut();
 }
 
 function setOperator() {
   console.log('in setOperator:', $(this).text());
   currentType = $(this).text();
+  updateTextOut();
 }
 
 let readyNow = () => {
@@ -77,6 +99,7 @@ let readyNow = () => {
   $('#doMathButton').on('click', doMathNow);
   $('.operatorTypeButtonThing').on('click', setOperator);
   $('#goAwayButton').on('click', clearAll);
+  $('.numberButton').on('click', setNumber );
   historyNow();
 }
 
