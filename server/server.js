@@ -27,6 +27,7 @@ app.get( '/history', function( req, res) {
 
 app.post( '/doMath', function( req, res) {
   console.log( 'in doMath POST:', req.body );
+  history.unshift(req.body);
 
   if ( req.body.type == '-' ) {
     currentAnswer = Number( req.body.x ) - Number( req.body.y );
